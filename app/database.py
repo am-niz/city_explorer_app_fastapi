@@ -6,6 +6,6 @@ URL_DATABASE = 'postgresql://postgres:admin@localhost:5432/city_explorer_db'
 
 engine = create_engine(URL_DATABASE)
 
-SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind= engine)
+SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 Base = declarative_base()

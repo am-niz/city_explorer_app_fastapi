@@ -1,46 +1,54 @@
-from pydantic import BaseModel
-from typing import List, Optional
 from __future__ import annotations
+from pydantic import BaseModel, validator
+from typing import List, Optional
 
-class UserBase(BaseModel):
+
+
+# city_name_pattern = r'^[a-zA-Z\s-]+$'  # Allows letters, spaces, and hyphens
+
+
+
+class UserCreate(BaseModel):
     username: str
     email: str
-
-class UserCreate(UserBase):
     password: str
 
-class User(UserBase):
-    id: int
-    preferences: List[Preference] = []
+# class UserBase(UserCreate):
+#     username: str
+#     email: str
 
-    class Config:
-        orm_mode = True
+# class User(UserBase):
+#     id: int
+#     preferences: List[Preference] = []
 
-class PreferenceBase(BaseModel):
-    activity_type: str
-    preference_score: float
+#     class Config:
+#         orm_mode = True
 
-class PreferenceCreate(PreferenceBase):
-    pass
+# class PreferenceBase(BaseModel):
+#     activity_type: str
+#     preference_score: float
 
-class Preference(PreferenceBase):
-    id: int
-    user_id: int
+# class PreferenceCreate(PreferenceBase):
+#     pass
 
-    class Config:
-        orm_mode = True
+# class Preference(PreferenceBase):
+#     id: int
+#     user_id: int
 
-class RecommendationBase(BaseModel):
-    activity: str
-    weather_condition: str
-    created_at: Optional[str]
+#     class Config:
+#         orm_mode = True
 
-class RecommendationCreate(RecommendationBase):
-    pass
+# class RecommendationBase(BaseModel):
+#     activity: str
+#     weather_condition: str
+#     created_at: Optional[str]
 
-class Recommendation(RecommendationBase):
-    id: int
-    user_id: int
+# class RecommendationCreate(RecommendationBase):
+#     pass
 
-    class Config:
-        orm_mode = True
+# class Recommendation(RecommendationBase):
+#     id: int
+#     user_id: int
+
+#     class Config:
+#         orm_mode = True
