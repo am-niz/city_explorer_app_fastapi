@@ -10,16 +10,18 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String)
-    # preferences = relationship("Preference", back_populates="user")
+    preferences = relationship("Preference", back_populates="user")
 
-# class Preference(Base): 
-#     __tablename__ = "preferences"
+class Preference(Base): 
+    __tablename__ = "preferences"
 
-#     id = Column(Integer, primary_key=True, index=True)
-#     user_id = Column(Integer, ForeignKey("users.id"))
-#     activity_type = Column(String, index=True)
-#     Preference_score = Column(Float)
-#     user = relationship("User", back_populates="preferences")
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    weather = Column(String, index=True)
+    activity_type = Column(String, index=True)
+    activity = Column(String, index=True)
+    preference_score = Column(Float)
+    user = relationship("User", back_populates="preferences")
 
 # class Recommendation(Base):
 #     __tablename__ = "recommendations"

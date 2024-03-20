@@ -8,14 +8,12 @@ from typing import List, Optional
 
 
 
-class UserCreate(BaseModel):
+class UserBase(BaseModel):
     username: str
-    email: str
     password: str
 
-# class UserBase(UserCreate):
-#     username: str
-#     email: str
+class UserCreate(UserBase):
+    email: str
 
 # class User(UserBase):
 #     id: int
@@ -24,19 +22,21 @@ class UserCreate(BaseModel):
 #     class Config:
 #         orm_mode = True
 
-# class PreferenceBase(BaseModel):
-#     activity_type: str
-#     preference_score: float
+class PreferenceBase(BaseModel):
+    weather: str
+    activity_type: str
+    activity: str
+    preference_score: float
 
 # class PreferenceCreate(PreferenceBase):
 #     pass
 
-# class Preference(PreferenceBase):
-#     id: int
-#     user_id: int
+class PreferenceResponse(PreferenceBase):
+    id: int
+    user_id: Optional[int]
 
-#     class Config:
-#         orm_mode = True
+    class Config:
+        orm_mode = True
 
 # class RecommendationBase(BaseModel):
 #     activity: str
