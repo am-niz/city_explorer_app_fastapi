@@ -4,7 +4,7 @@ import requests
 
 OPEN_WEATHER_MAP_URL = "http://api.openweathermap.org/data/2.5/weather"
 API_KEY = 'b5809735937dbb4931ae0689ee5f7c61'
-city_name="kochi"
+
 
 def kelvin_to_celsius_and_fahrenheit(kelvin):
     cesius = kelvin - 273.15
@@ -38,4 +38,15 @@ def fetch_weather_data(city_name):
     print(f"Sun Rise At: {sun_rise_time}")
     print(f"Sun Set At: {sun_set_time}")
 
-fetch_weather_data(city_name)
+    return {
+        "description": description,
+        "temp_ceslsius": temp_ceslsius,
+        "humidity": humidity,
+        "wind_speed": wind_speed,
+        "sun_rise_time": sun_rise_time,
+        "sun_set_time": sun_set_time,
+    }
+
+
+
+

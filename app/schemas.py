@@ -38,10 +38,13 @@ class PreferenceResponse(PreferenceBase):
     class Config:
         orm_mode = True
 
-# class RecommendationBase(BaseModel):
-#     activity: str
-#     weather_condition: str
-#     created_at: Optional[str]
+class RecommendationCreate(BaseModel):
+    weather: str
+    temperature: float
+    humidity: float
+    activity_type: str
+    activity: str
+
 
 # class RecommendationCreate(RecommendationBase):
 #     pass
