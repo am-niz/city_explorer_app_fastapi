@@ -9,7 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    password = Column(String)
+    hashed_password = Column(String)
     preferences = relationship("Preference", back_populates="user")
 
 class Preference(Base): 
@@ -28,7 +28,5 @@ class Recommendation(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weather = Column(String, index=True)
-    temperature = Column(Float, index=True)
-    humidity = Column(Float, index=True)
     activity_type = Column(String, index=True)
     activity = Column(String, index=True)
