@@ -4,7 +4,7 @@ from typing import List, Optional
 
 
 
-# city_name_pattern = r'^[a-zA-Z\s-]+$'  # Allows letters, spaces, and hyphens
+
 
 
 

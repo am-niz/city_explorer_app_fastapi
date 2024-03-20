@@ -23,11 +23,17 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+#email validator
 def validate_email(email: str) -> bool:
     return re.match(email_pattern, email) is not None
 
-
 email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+#city_name validator
+def validate_city_name(city_name: str) -> bool:
+    return re.match(city_name_pattern, city_name) is not None
+
+city_name_pattern = r'^[a-zA-Z\s-]+$'  
 
 @app.post("/usersignup")
 async def create_user(usercreate: UserCreate, db: db_dependency):
@@ -53,7 +59,7 @@ async def create_user(usercreate: UserCreate, db: db_dependency):
 async def user_login(userlogin: UserBase, db: db_dependency):
     pass
 
-    
+# user can submit their preferences to db through this endpoint
 @app.post("/preferences")
 async def set_preferences(preferences: PreferenceBase, db: db_dependency):
     try:
@@ -72,7 +78,8 @@ async def set_preferences(preferences: PreferenceBase, db: db_dependency):
         return "success"
     except SQLAlchemyError as e:
         return "failed"
-    
+
+# admin can store recomentations with respect to different parameters on this endpoint    
 @app.post("/recomendation")
 async def create_recomendation(recomendation: RecommendationCreate, db: db_dependency):
     try:
@@ -93,65 +100,73 @@ async def create_recomendation(recomendation: RecommendationCreate, db: db_depen
         return "failed"
 
 
-    
+# User will get the recomentation of activites with respect to the properties or data that comes from the OpenWeather api and also with respect to user Preferences
 @app.get('/recomendation/{activity_type}/{city_name}', response_model=List[str])
-def get_recomendation(activity_type: str,city_name: str, db: db_dependency):
-    clouds = ["overcast clouds", "broken clouds", "scattered clouds"]
-    print(activity_type)
+async def get_recomendation(activity_type: str,city_name: str, db: db_dependency):
+    try:
+        if not validate_city_name(city_name):
+            raise HTTPException(status_code=404, detail="unknown city")
+        
+        weather_data = fetch_weather_data(city_name)
 
-    weather_data = fetch_weather_data(city_name)
+        description = weather_data["description"]
+        temp_celsius = weather_data["temp_ceslsius"]
+        humidity = weather_data["humidity"]
+        wind_speed = weather_data["wind_speed"]
+        sun_rise_time = weather_data["sun_rise_time"]
+        sun_set_time = weather_data["sun_set_time"]
 
-    description = weather_data["description"]
-    temp_celsius = weather_data["temp_ceslsius"]
-    humidity = weather_data["humidity"]
-    wind_speed = weather_data["wind_speed"]
-    sun_rise_time = weather_data["sun_rise_time"]
-    sun_set_time = weather_data["sun_set_time"]
+        clouds = ["overcast clouds", "broken clouds", "scattered clouds"]
 
-    if description in clouds:
-        description = "cloud"
+        if description in clouds:
+            description = "cloud"
 
-    activities1 = db.query(Recommendation).filter(
-    Recommendation.weather == description,
-    Recommendation.activity_type == activity_type,
-    # Recommendation.temperature == temp_celsius,
-    # Recommendation.humidity == humidity,   
-    ).all()
-    print(activities1)   
-    
+        activities1 = db.query(Recommendation).filter(
+        Recommendation.weather == description,
+        Recommendation.activity_type == activity_type,
+        # Recommendation.temperature == temp_celsius,
+        # Recommendation.humidity == humidity,   
+        ).all()
+        print(activities1)   
+        
 
 
 
-    recommended_activities_from_recommendations = [activity.activity for activity in activities1]
-    print(recommended_activities_from_recommendations)
+        recommended_activities_from_recommendations = [activity.activity for activity in activities1]
+        print(recommended_activities_from_recommendations)
 
-    activities2 = db.query(Preference).filter(
-        Preference.weather == description,
-        Preference.activity_type == activity_type,
-        Preference.preference_score > 3,
-        Preference.preference_score <= 5,
-        Preference.user_id == None 
-    ).all()
+        activities2 = db.query(Preference).filter(
+            Preference.weather == description,
+            Preference.activity_type == activity_type,
+            Preference.preference_score > 3,
+            Preference.preference_score <= 5,
+            Preference.user_id == None 
+        ).all()
 
-    recommended_activities_from_preferences = [activity.activity for activity in activities2]
-    print(recommended_activities_from_preferences)
+        recommended_activities_from_preferences = [activity.activity for activity in activities2]
+        print(recommended_activities_from_preferences)
 
-    recommended_activities_from_recommendations.extend(recommended_activities_from_preferences)
+        recommended_activities_from_recommendations.extend(recommended_activities_from_preferences)
 
-    if 15 < wind_speed < 25 and 20 < temp_celsius < 30 and description == "clear sky" and activity_type == "outdoor":
-        recommended_activities_from_recommendations.extend(["Kiting"])
-        recommended_activities_from_recommendations.extend(["Sailing"])
+        if 15 < wind_speed < 25 and 20 < temp_celsius < 30 and description == "clear sky" and activity_type == "outdoor":
+            recommended_activities_from_recommendations.extend(["Kiting"])
+            recommended_activities_from_recommendations.extend(["Sailing"])
 
-    
-    current_time = datetime.now()
+        
+        current_time = datetime.now()
 
-    if current_time >= sun_rise_time and current_time <= sun_rise_time + timedelta(hours=2):
-        recommended_activities_from_recommendations.extend(["Early morning walk"])
-    
-    if current_time <= sun_set_time and current_time >= sun_set_time - timedelta(hours=2):
-        recommended_activities_from_recommendations.extend(["Evening hikes"])
-    
-    recommendations = list(set(recommended_activities_from_recommendations))
+        if current_time >= sun_rise_time and current_time <= sun_rise_time + timedelta(hours=2):
+            recommended_activities_from_recommendations.extend(["Early morning walk"])
+        
+        if current_time <= sun_set_time and current_time >= sun_set_time - timedelta(hours=2):
+            recommended_activities_from_recommendations.extend(["Evening hikes"])
+        
+        recommendations = list(set(recommended_activities_from_recommendations))
 
-    return recommendations
+        return recommendations
+    except SQLAlchemyError as e:
+        return {"recomendation failed"}
+
+
+
 
