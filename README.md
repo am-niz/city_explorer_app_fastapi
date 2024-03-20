@@ -45,13 +45,11 @@ uvicorn app.main:app --reload
 ```
 
 ## Usage
-After running the application, you can access the City Explorer API through your web browser or tools like Postman at `http://127.0.0.1:8000`.
-
-Explore available API endpoints to interact with the application, such as retrieving information on cities, managing user preferences, and more.
+After running the application, you can access the City Explorer API through your web browser or tools like swagger at `http://127.0.0.1:8000/docs`.
 
 
 ## Contact
-Your Name - nizamudheenmj@gmail.com
+Email - nizamudheenmj@gmail.com
 
 Project Link: [https://github.com/your_username_/city_explorer](https://github.com/am-niz/city_explorer_app_fastapi)
 
